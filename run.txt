@@ -1,0 +1,7 @@
+python -m deephar.data.pennaction
+
+CUDA_VISIBLE_DEVICES=0 python exp/pennaction/eval_penn_ar_pe_merge.py
+
+python -m deephar.data.pennaction
+
+CUDA_VISIBLE_DEVICES=0 python exp/mpii/eval_mpii_singleperson.py
