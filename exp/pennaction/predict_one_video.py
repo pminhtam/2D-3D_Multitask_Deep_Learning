@@ -14,7 +14,7 @@ from deephar.data import PennAction
 from deephar.data import BatchLoader
 
 from deephar.models import reception
-from deephar.models import action
+from deephar.models import action_2D as action
 from deephar.utils import *
 
 sys.path.append(os.path.join(os.getcwd(), 'exp/common'))
@@ -57,30 +57,16 @@ model = action.build_merge_model(model_pe, num_actions, input_shape,
         num_frames, num_joints, num_blocks, pose_dim=2, pose_net_version='v1',
         full_trainable=False)
 
-"""Load pre-trained model."""
-"""
-weights_path = get_file(weights_file, TF_WEIGHTS_PATH, md5_hash=md5_hash,
-        cache_subdir='models')
-
-print("wwwww xxxxxxxx c zzz   ",weights_path)
-model.load_weights(weights_path)
-"""
 
 
 """Load PennAction dataset."""
-"""
+# """
 penn_seq = PennAction('datasets/PennAction', pennaction_dataconf,
         poselayout=pa16j2d, topology='sequences', use_gt_bbox=use_bbox,
         clip_size=num_frames)
 
 penn_te = BatchLoader(penn_seq, ['frame'], ['pennaction'], TEST_MODE,
         batch_size=1, shuffle=False)
-
-
-printcn(OKGREEN, 'Evaluation on PennAction multi-clip using predicted bboxes')
-# eval_multiclip_dataset(model, penn_seq,
-#         bboxes_file='datasets/PennAction/penn_pred_bboxes_16f.json',
-#         logdir=logdir)
 
 
 # =================================================================
@@ -110,27 +96,31 @@ actions_lb = ['baseball_pitch', 'baseball_swing', 'bench_press', 'bowl', 'clean_
 # print(data['frame'].shape) # (16, 256, 256, 3)
 # print(data['seq_idx'])
 # print(data['frame_list'])
+print("num_frames "  ,  num_frames ," \n num_joints   ",num_joints ,"\n num_joints:   ", num_actions )
 print(data['pennaction'])
 # for i in range(16):
 #     plt.imshow((data['frame'][i]/2.+.5))
 #     plt.savefig("frame"+str(i)+".png")
 
 pred = model.predict(np.expand_dims(data['frame'], axis=0))
-"""
-"""
-print(pred)
+# """
+# """
+# print(pred)
 print(len(pred))
 for i in pred:
 
-    print("predict  : ",np.argmax(i))
+    print("predict  : ",i)
+    # print(" shape : ",i.shape)
     print("predict  : ",actions_lb[np.argmax(i)])
-print("predict :  ", np.argmax(pred,axis=-1))
-"""
-
-# print(pred[-1])
-
-
+# print("predict :  ", np.argmax(pred,axis=-1))
 # """
+
+# print(pred[0])
+# print(pred[1])
+
+# ========================================================
+
+"""
 
 from keras.utils import plot_model
 
@@ -138,11 +128,6 @@ from keras.utils import plot_model
 # model_pe.summary()
 model.summary()
 # plot_model(model_pe,"model_pe.png",show_shapes=True,show_layer_names=True)
-# plot_model(model,"model.png",show_shapes=True,show_layer_names=True)
+plot_model(model,"model_2D.png",show_shapes=True,show_layer_names=True)
 
-# """
-
-
-
-
-# CUDA_VISIBLE_DEVICES=0 python exp/pennaction/eval_penn_ar_pe_merge.py
+"""

@@ -47,7 +47,7 @@ class BatchLoader(Sequence):
 
     def __init__(self, dataset, x_dictkeys, y_dictkeys, mode,
             batch_size=24, num_predictions=1, shuffle=True,
-            custom_dummy_dictkey=[]):
+            custom_dummy_dictkey=[],is_penn_train = False):
 
         if not isinstance(dataset, list):
             dataset = [dataset]
@@ -55,7 +55,7 @@ class BatchLoader(Sequence):
         self.x_dictkeys = x_dictkeys
         self.y_dictkeys = y_dictkeys
         self.allkeys = x_dictkeys + y_dictkeys
-
+        self.is_penn_train = is_penn_train
         """Include custom dictkeys into the output list."""
         self.custom_dummy_dictkey = custom_dummy_dictkey
         self.custom_dictkeys = []
@@ -126,7 +126,12 @@ class BatchLoader(Sequence):
             for _ in range(self.num_predictions[i]):
                 y_batch.append(data_dict[dkey])
 
-        return x_batch, y_batch
+        if self.is_penn_train:
+            y_batch = np.array(y_batch)
+            y_batch = [y_batch[0],y_batch[0],y_batch[0],y_batch[0],y_batch[0],y_batch[0],y_batch[0],y_batch[0],y_batch[0],y_batch[0],y_batch[0]]
+        # y_batch = np.array(y_batch)
+        # y_batch = [y_batch[0], y_batch[0], y_batch[0]]
+        return x_batch,y_batch
 
     def get_batch_size(self):
         return sum(self.batch_sizes)

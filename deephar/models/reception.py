@@ -315,6 +315,7 @@ def build(input_shape, num_joints, dim,
         outputs.append(vfeat)
 
     model = Model(inputs=inp, outputs=outputs)
+    # model = Model(inputs=inp, outputs=[pose, visible, hm])
 
     return model
 

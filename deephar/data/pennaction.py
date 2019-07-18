@@ -173,7 +173,7 @@ class PennAction(object):
                 imgt = T(None, img_size=(w, h))
             else:
                 image = 'frames/%04d/%06d.jpg' % (seq.idx, objframes[i].f)
-                print("PennAction.getdata 175 :  ",image)
+                # print("PennAction.getdata 175 :  ",image)
                 imgt = T(Image.open(os.path.join(self.dataset_path, image)))
                 if self.output_fullframe:
                     fullframes[i, :, :, :] = normalize_channels(imgt.asarray(),
@@ -215,6 +215,9 @@ class PennAction(object):
 
         output['seq_idx'] = seq_idx     # index
         output['frame_list'] = frame_list
+        # output['pennaction'] = action
+        # print(action)
+        # print(action.shape)
         output['pennaction'] = action
         output['ntuaction'] = np.zeros((60,))
         output['pose'] = pose

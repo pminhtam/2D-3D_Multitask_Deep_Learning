@@ -55,32 +55,14 @@ model.load_weights(weights_path)
 # model.compile('sgd','mse')
 
 """Merge pose and visibility as a single output."""
+# """
 outputs = []
 for b in range(int(len(model.outputs) / 2)):
     outputs.append(concatenate([model.outputs[2*b], model.outputs[2*b + 1]],
         name='blk%d' % (b + 1)))
-model = Model(model.input, outputs, name=model.name)
+# """
+# model = Model(model.input, outputs, name=model.name)
 
-"""Load the MPII dataset."""
-mpii = MpiiSinglePerson('datasets/MPII', dataconf=mpii_sp_dataconf)
-
-"""Pre-load validation samples and generate the eval. callback."""
-
-mpii_val = BatchLoader(mpii, x_dictkeys=['frame'],
-        y_dictkeys=['pose', 'afmat', 'headsize'], mode=VALID_MODE,
-        # batch_size=mpii.get_length(VALID_MODE), num_predictions=1,
-        batch_size=1, num_predictions=1,
-        shuffle=False)
-printcn(OKBLUE, 'Pre-loading MPII validation data...')
-[x_val], [p_val, afmat_val, head_val] = mpii_val[0]
-print(p_val)
-printcn(OKGREEN, 'Load done...')
-
-# eval_singleperson_pckh(model, x_val, p_val[:,:,0:2], afmat_val, head_val)
-
-# pred = model.predict(input, batch_size=batch_size, verbose=1)
-# print(input)
-# print(input.z)
 
 
 import matplotlib.pyplot as plt
@@ -88,7 +70,9 @@ from PIL import Image
 import numpy as np
 # input = np.array(Image.open("000001.jpg").resize((256,256)))/255.0
 # input = np.array(Image.open("aa.jpg").resize((256,256)))/255.0
-input = np.array(Image.open("datasets/MPII/images/040275362.jpg").resize((256,256)))/255.0
+# input = np.array(Image.open("datasets/MPII/images/069937887.jpg").resize((256,256)))/255.0
+# input = np.array(Image.open("datasets/MPII/images/099946068.jpg").resize((256,256)))/255.0
+input = np.array(Image.open("/mnt/hdd10tb/Datasets/MERL_Shopping/ReachToShelf/31_2_crop_1150_1171_ReachToShelf-0005.jpg").resize((256,256)))/255.0
 # input = np.array(Image.open("frame0.png").resize((256,256)))/255.0
 input = np.array([input])[:,:,:,:3]
 
@@ -96,12 +80,18 @@ plt.imshow(input[0])
 # plt.savefig("mpii_input")
 
 pred = model.predict(input)
-# for i in range(8)
+# print(pred)
+
+for i in pred:
+    print(" predict  : ", i.shape)
+
+
+# """
 print(len(pred))
 for j in range(7,8):
     for zz in pred[j][0]:
         print(zz)
         plt.scatter(zz[0] * 256, zz[1] * 256)
-plt.savefig("mpii_pred_mpii.png")
-
+plt.savefig("mpii_pred_mpii_31_2_crop_1150_1171_ReachToShelf-0005.jpg")
+# """
 

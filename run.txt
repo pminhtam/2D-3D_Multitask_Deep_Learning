@@ -5,3 +5,7 @@ CUDA_VISIBLE_DEVICES=0 python exp/pennaction/eval_penn_ar_pe_merge.py
 python -m deephar.data.pennaction
 
 CUDA_VISIBLE_DEVICES=0 python exp/mpii/eval_mpii_singleperson.py
+
+CUDA_VISIBLE_DEVICES=1 python exp/coco/train_coco_singleperson.py
+
+CUDA_VISIBLE_DEVICES=2 python exp/merl/train_merl_singleperson.py

@@ -158,6 +158,7 @@ class MpiiSinglePerson(object):
 
 
 from deephar.config import mpii_sp_dataconf
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     data = MpiiSinglePerson('datasets/MPII', dataconf=mpii_sp_dataconf)
@@ -166,15 +167,26 @@ if __name__ == "__main__":
     # rectidxs, images, annorect = load_mpii_mat_annotation(filename)
     # print(rectidxs[1])
 
-    out = data.get_data(0,TRAIN_MODE)
-    print(out)
+    # out = data.get_data(0,TRAIN_MODE)
+    # print(out)
 
     mat = sio.loadmat(filename)
     annot_tr = mat['annot_tr']  # train
     # annot_val = mat['annot_val']  # validation
     # print(annot_tr[:,1])
-
-    print("rectidx  : ", annot_tr[0,2])
-    print("images  : ", annot_tr[1,2])
+    print(annot_tr[0])
+    # print("rectidx  : ", annot_tr[0,2])
+    print("images  : ", annot_tr[1,0])
     # print("annorect  : ", annot_tr[2,0])
-    # print("annorect  : ", annot_tr[2,0][0,0]['pose'])
+    print("annorect  : ", annot_tr[2,0][0,0]['pose'][0,0].shape)
+    print("annorect  : ", annot_tr[2,0][1,0]['pose'][0,0])
+
+    input = np.array(Image.open("datasets/MPII/images/015601864.jpg")) / 255.0
+    input = np.array([input])[:, :, :, :3]
+
+    plt.imshow(input[0])
+
+    for i in range(0,16):
+        plt.scatter(annot_tr[2,0][0,0]['pose'][0,0][0,i],annot_tr[2,0][0,0]['pose'][0,0][1,i])
+        plt.scatter(annot_tr[2,0][1,0]['pose'][0,0][0,i],annot_tr[2,0][1,0]['pose'][0,0][1,i])
+    plt.savefig("mpii_pred_mpii_015601864.jpg")

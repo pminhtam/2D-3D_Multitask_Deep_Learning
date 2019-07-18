@@ -9,7 +9,7 @@ from .utils import *
 class SaveModel(Callback):
 
     def __init__(self, filepath, model_to_save=None, save_best_only=False,
-            callback_to_monitor=None, verbose=1):
+            callback_to_monitor=None, verbose=1,save_after_num_epoch = 1):
 
         if save_best_only and callback_to_monitor is None:
             warning('Cannot save the best model with no callback monitor')
@@ -19,6 +19,7 @@ class SaveModel(Callback):
         self.save_best_only = save_best_only
         self.callback_to_monitor = callback_to_monitor
         self.verbose = verbose
+        self.save_after_num_epoch = save_after_num_epoch
 
     def on_epoch_end(self, epoch, logs=None):
         if self.model_to_save is not None:
@@ -28,11 +29,13 @@ class SaveModel(Callback):
 
         filename = self.filepath.format(epoch=epoch + 1)
 
-        if self.best_epoch == epoch + 1 or not self.save_best_only:
-            if self.verbose:
-                printnl('Saving model @epoch=%05d to %s' \
-                        % (epoch + 1, filename))
-            model.save_weights(filename)
+        # if (self.best_epoch == epoch + 1 or not self.save_best_only) and epoch%20 == 0:
+        if (self.best_epoch == epoch + 1 or not self.save_best_only):
+            if epoch>self.save_after_num_epoch and epoch%self.save_after_num_epoch == 0:
+                if self.verbose:
+                    printnl('Saving model @epoch=%05d to %s' \
+                            % (epoch + 1, filename))
+                model.save_weights(filename)
 
     @property
     def best_epoch(self):

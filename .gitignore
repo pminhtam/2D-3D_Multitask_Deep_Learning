@@ -30,3 +30,7 @@ lib
 .idea/
 
 link to *
+
+*.json
+
+find * -type l | sed -e s'/^\.\///g'

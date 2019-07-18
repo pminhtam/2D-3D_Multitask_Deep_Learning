@@ -4,3 +4,5 @@ from .mpii import MpiiSinglePerson
 from .human36m import Human36M
 from .pennaction import PennAction
 from .ntu import Ntu
+from .coco import COCOSinglePerson
+from .merl import MERLSinglePerson
