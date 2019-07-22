@@ -69,7 +69,7 @@ class MERLSinglePerson(object):
             else:
                 key_point_2[i][2] = 0
         output['image'] = img
-        output['pose'] = key_point_2
+        output['pose'] = key_point_2[:-1]
         return output
 
     def get_shape(self, dictkey):
@@ -78,7 +78,7 @@ class MERLSinglePerson(object):
             return (256,256,3)
         if dictkey == 'pose':
             # return (self.poselayout.num_joints, self.poselayout.dim+1)
-            return (17,3)
+            return (16,3)
 
         raise Exception('Invalid dictkey on get_shape!')
 
@@ -93,9 +93,10 @@ if __name__ == "__main__":
     merl = MERLSinglePerson(dataset_path,anno_path)
     img = merl.get_data(5)["image"]
     pose = merl.get_data(5)["pose"]
-    print(img)
-    plt.imshow(img)
-    for zz in pose:
-        print(zz)
-        plt.scatter(zz[0] * 256, zz[1] * 256)
-    plt.savefig("merl_data_2.jpg")
+    print(pose)
+    print(pose.shape)
+    # plt.imshow(img)
+    # for zz in pose:
+    #     print(zz)
+    #     plt.scatter(zz[0] * 256, zz[1] * 256)
+    # plt.savefig("merl_data_2.jpg")

@@ -22,7 +22,7 @@ def build_act_pred_block(x, num_out, name=None, last=False, include_top=True):
     num_features = K.int_shape(x)[-1]
 
     ident = x
-    x = act_conv_bn(x, int(num_features/2), (1, 1))
+    x = act_conv_bn(x, int(round(num_features/2)), (1, 1))
     x = act_conv_bn(x, num_features, (3, 3))
     x = add([ident, x])
 
@@ -37,6 +37,9 @@ def build_act_pred_block(x, num_out, name=None, last=False, include_top=True):
     if not last:
         action_hm = UpSampling2D((2, 2))(action_hm)
         action_hm = act_conv_bn(action_hm, num_features, (3, 3))
+        print(ident)
+        print(x1)
+        print(action_hm)
         x = add([ident, x1, action_hm])
 
     return x, y
@@ -96,6 +99,7 @@ def build_visual_model(num_joints, num_actions, num_features,
     inp = Input(shape=(num_temp_frames, num_joints, num_features))
     x = conv_bn(inp, 256, (1, 1))
     x = MaxPooling2D((2, 2))(x)
+
     x, y1 = build_act_pred_block(x, num_actions, name='y1',
             include_top=include_top)
     x, y2 = build_act_pred_block(x, num_actions, name='y2',

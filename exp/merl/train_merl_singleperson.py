@@ -28,7 +28,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--num-block",type=int,default=8,help="number of block")
 parser.add_argument("--batch-size",type=int,default=16,help="batch size")
 parser.add_argument("--epochs",type=int,default=100,help="epochs")
-parser.add_argument("--num-joints",type=int,default=17,help="num joint")
+parser.add_argument("--num-joints",type=int,default=16,help="num joint")
 parser.add_argument("--log-dir",type=str,default=None,help="log dir")
 parser.add_argument("--anno-path",type=str,default="/home/duong/lightweight-human-pose-estimation/prepare_train_merl.pkl",\
                     help="annotation path")

@@ -33,7 +33,7 @@ if len(sys.argv) > 1:
 num_blocks = 8
 batch_size = 24
 input_shape = mpii_sp_dataconf.input_shape
-num_joints = 17
+num_joints = 16
 # """
 model = reception.build(input_shape, num_joints, dim=2,
         num_blocks=num_blocks, num_context_per_joint=2, ksize=(5, 5),

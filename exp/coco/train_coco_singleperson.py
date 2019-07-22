@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--num-block",type=int,default=8,help="number of block")
 parser.add_argument("--batch-size",type=int,default=16,help="batch size")
 parser.add_argument("--epochs",type=int,default=100,help="epochs")
-parser.add_argument("--num-joints",type=int,default=17,help="num joint")
+parser.add_argument("--num-joints",type=int,default=16,help="num joint")
 parser.add_argument("--log-dir",type=str,default=None,help="log dir")
 parser.add_argument("--anno-path",type=str,default="/mnt/hdd10tb/Users/tam/COCO/annotations/person_keypoints_train2017.json",\
                     help="annotation path")
@@ -52,7 +52,7 @@ image_path = args.image_path
 if logdir:
     mkdir(logdir)
     sys.stdout = open(str(logdir) + '/log_coco.txt', 'w')
-
+print(num_joints)
 model = reception.build(input_shape, num_joints, dim=2,
         num_blocks=num_blocks, num_context_per_joint=2, ksize=(5, 5))
 
@@ -93,7 +93,7 @@ steps_per_epoch = coco.get_length(TRAIN_MODE) // batch_size
 
 model.fit_generator(data_tr,
         # steps_per_epoch=steps_per_epoch,
-        epochs=20,
+        epochs=epochs,
         callbacks=callbacks,
         workers=8,
         initial_epoch=0)

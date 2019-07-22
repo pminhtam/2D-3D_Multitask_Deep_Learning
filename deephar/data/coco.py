@@ -72,7 +72,7 @@ class COCOSinglePerson(object):
             print("error resize  : ",img.shape)
             print("error  resize : imgIdx  ", imgIdx)
         output['image'] = img
-        output['pose'] = key_point
+        output['pose'] = key_point[:-1]
 
         return output
 
@@ -82,7 +82,7 @@ class COCOSinglePerson(object):
             return (256,256,3)
         if dictkey == 'pose':
             # return (self.poselayout.num_joints, self.poselayout.dim+1)
-            return (17,3)
+            return (16,3)
 
         raise Exception('Invalid dictkey on get_shape!')
 
@@ -95,9 +95,10 @@ if __name__ == "__main__":
     data = coco.get_data(11)
     img = data["image"]
     pose = data["pose"]
-    print(img)
-    plt.imshow(img)
-    for zz in pose:
-        print(zz)
-        plt.scatter(zz[0] * 256, zz[1] * 256)
-    plt.savefig("coco_data_5.jpg")
+    print(pose.shape)
+    # print(img)
+    # plt.imshow(img)
+    # for zz in pose:
+    #     print(zz)
+    #     plt.scatter(zz[0] * 256, zz[1] * 256)
+    # plt.savefig("coco_data_5.jpg")

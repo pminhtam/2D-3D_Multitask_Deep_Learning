@@ -6,3 +6,4 @@ from .pennaction import PennAction
 from .ntu import Ntu
 from .coco import COCOSinglePerson
 from .merl import MERLSinglePerson
+from .merl_action import MERLAction
