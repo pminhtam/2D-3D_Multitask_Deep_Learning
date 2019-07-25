@@ -50,7 +50,7 @@ model = Model(model.input, outputs, name=model.name)
 # """
 """Load pre-trained model."""
 # """
-weights_path = "weights_merl_201.h5"
+weights_path = "weights_merl_061.h5"
 model.load_weights(weights_path)
 # """
 anno_path = "/home/pminhtamnb/proj4/7-kpts/merl4000_4300.pkl"
@@ -91,6 +91,6 @@ for j in range(7,8):
         print(zz)
         if zz[2]>0.5:
             plt.scatter(zz[0] * 256, zz[1] * 256)
-plt.savefig("merl_5.jpg")
+plt.savefig("merl_1.jpg")
 # """
 

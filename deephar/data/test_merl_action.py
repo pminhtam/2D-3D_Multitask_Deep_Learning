@@ -55,18 +55,20 @@ def load_data():
     f = open(anno_path, 'rb')
     datas = pickle.load(f)
     f.close()
-    name_videos = {}
+    videos_dict = {}
     bbox_dict = {}
     for i in datas:
         bbox_dict[i['img_paths']] = i['bbox']
         name_video = i['img_paths'].split("-")[0]
-        if name_video in name_videos.keys():
-            name_videos[name_video] += 1
+        if name_video in videos_dict.keys():
+            videos_dict[name_video].append(i['img_paths'])
         else:
-            name_videos[name_video] = 1
-    return name_videos, bbox_dict
+            videos_dict[name_video] = [i['img_paths']]
+    return videos_dict, bbox_dict
 
-name_videos, bbox_dict = load_data()
+videos_dict, bbox_dict = load_data()
 
-print(len(name_videos))
-# print(bbox_dict)
+# print(len(name_videos))
+print(videos_dict['17_2_crop_1077_1108_RetractFromShelf'])
+print(bbox_dict['20_3_crop_4626_4667_RetractFromShelf-0004.jpg'])
+print(bbox_dict['17_2_crop_1077_1108_RetractFromShelf-0005.jpg'])

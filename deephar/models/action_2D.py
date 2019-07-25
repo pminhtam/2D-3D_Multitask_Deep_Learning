@@ -37,9 +37,9 @@ def build_act_pred_block(x, num_out, name=None, last=False, include_top=True):
     if not last:
         action_hm = UpSampling2D((2, 2))(action_hm)
         action_hm = act_conv_bn(action_hm, num_features, (3, 3))
-        print(ident)
-        print(x1)
-        print(action_hm)
+        # print(ident)
+        # print(x1)
+        # print(action_hm)
         x = add([ident, x1, action_hm])
 
     return x, y

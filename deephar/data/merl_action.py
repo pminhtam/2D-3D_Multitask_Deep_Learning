@@ -28,11 +28,12 @@ class MERLAction(object):
         bbox_dict = {}
         for i in datas:
             bbox_dict[i['img_paths']] = i['bbox']
-            name_video = i['img_paths'].split("-")[0]
+            image_name = i['img_paths']
+            name_video = image_name.split("-")[0]
             if name_video in videos_dict.keys():
-                videos_dict[name_video] += 1
+                videos_dict[name_video].append(image_name)
             else:
-                videos_dict[name_video] = 1
+                videos_dict[name_video] = [image_name]
         return  videos_dict,bbox_dict
 
     def load_image(self, image_name):
@@ -56,8 +57,10 @@ class MERLAction(object):
         # return imgt
     def load_video(self,video_name,num_frame):
         video = []
-        for i in range(1,num_frame+1):
-            image_name = video_name +"-000"+str(i)+".jpg"
+        for i in range(0,num_frame):
+            if i>=num_frame:
+                break
+            image_name = self.videos_dict[video_name][i]
             image = self.load_image(image_name)
             video.append(image)
         return video

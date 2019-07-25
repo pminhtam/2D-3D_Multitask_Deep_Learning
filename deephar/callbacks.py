@@ -31,7 +31,7 @@ class SaveModel(Callback):
 
         # if (self.best_epoch == epoch + 1 or not self.save_best_only) and epoch%20 == 0:
         if (self.best_epoch == epoch + 1 or not self.save_best_only):
-            if epoch>self.save_after_num_epoch and epoch%self.save_after_num_epoch == 0:
+            if epoch>self.save_after_num_epoch - 1 and epoch%self.save_after_num_epoch == 0:
                 if self.verbose:
                     printnl('Saving model @epoch=%05d to %s' \
                             % (epoch + 1, filename))

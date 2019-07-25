@@ -57,6 +57,8 @@ model = action.build_merge_model(model_pe, num_actions, input_shape,
         num_frames, num_joints, num_blocks, pose_dim=2, pose_net_version='v1',
         full_trainable=False)
 
+weights_path = "weights_pennaction_010.h5"
+model.load_weights(weights_path)
 
 
 """Load PennAction dataset."""

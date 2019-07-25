@@ -7,3 +7,4 @@ from .ntu import Ntu
 from .coco import COCOSinglePerson
 from .merl import MERLSinglePerson
 from .merl_action import MERLAction
+from .merl_5_action import MERL5Action
