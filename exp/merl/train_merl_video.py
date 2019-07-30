@@ -25,7 +25,7 @@ sys.path.append(os.path.join(os.getcwd(), 'exp/common'))
 sys.path.append(os.path.join(os.getcwd(), 'datasets'))
 import annothelper
 
-annothelper.check_pennaction_dataset()
+# annothelper.check_pennaction_dataset()
 
 
 num_frames = 4
@@ -59,7 +59,8 @@ merl_seq = MERLAction(dataset_path,anno_path, pennaction_dataconf,
 """
 # """
 anno_path = "/home/pminhtamnb/data.json"
-videos_dict_path =  "/home/son/lightweight-human-pose-estimation/settings/3/train_merl.json"
+# videos_dict_path =  "/home/son/lightweight-human-pose-estimation/settings/3/train_merl.json"
+videos_dict_path =  "/mnt/hdd10tb/Users/pminhtamnb/deephar/settings/setting_5/train.txt"
 merl_seq = MERL5Action(videos_dict_path,anno_path,pennaction_dataconf,
         poselayout=pa16j2d, clip_size=num_frames)
 """
@@ -68,23 +69,25 @@ merl_te = BatchLoader(merl_seq, ['frame'], ['merlaction'], TRAIN_MODE,
         batch_size=batch_size, shuffle=False,num_predictions=11)
 
 callbacks = []
-weights_file = 'weights_merlaction_3_{epoch:03d}.h5'
+weights_file = 'weights_merlaction_5_{epoch:03d}.h5'
 
-callbacks.append(SaveModel(weights_file,save_after_num_epoch=5))
+callbacks.append(SaveModel(weights_file,save_after_num_epoch=1000))
 
 from keras.optimizers import SGD
 lr = 0.001
 momentum = 0.95
 loss_weights=None
-
+epochs = 50
 model.compile(loss='categorical_crossentropy',
                 optimizer=SGD(lr=lr, momentum=momentum, nesterov=True),
                 metrics=['acc'], loss_weights=loss_weights)
 model.fit_generator(merl_te,
 # model.fit(x,y,
-#         steps_per_epoch=None,
-        epochs=7,
+#         steps_per_epoch=None, 
+        epochs=epochs,
         callbacks=callbacks,
         workers=4,
         initial_epoch=0)
 # """
+
+model.save_weights(weights_file.format(epoch =epochs))

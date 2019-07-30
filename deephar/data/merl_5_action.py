@@ -10,10 +10,11 @@ class MERL5Action(object):
     """Implementation of the MPII dataset for single person.
     """
 
-    def __init__(self,videos_dict_path, anno_path,dataconf=None,poselayout=pa16j2d,clip_size=5):
+    def __init__(self,videos_dict_path, anno_path,dataconf=None,poselayout=pa16j2d,clip_size=4):
 
         self.anno_path = anno_path
         self.videos_dict_path = videos_dict_path
+        self.clip_size = clip_size
 
         self.dataconf = dataconf
         self.poselayout = poselayout
@@ -24,26 +25,37 @@ class MERL5Action(object):
         self.name_videos = list(self.videos_dict.keys())
         random.shuffle(self.name_videos)
         self.classes = ["ReachToShelf","RetractFromShelf"]
-        self.clip_size = clip_size
 
     def load_videos_dict(self):
-        f = open(self.videos_dict_path, 'rb')
-        datas = json.load(f)
+        f = open(self.videos_dict_path, 'r')
+        datas = []
+        for i in f:
+            datas.append(i.strip("\n"))
         f.close()
         videos_dict = {}
         videos_dict_num = {}
-        for i in datas['images']:
-            image_name = i['file_name']
-            video_name = image_name.split("-")[0]
+        for i in datas:
+            # image_name = i
+            # video_name = image_name.split("-")[0]
+            video_name = i
+            """
             if video_name in videos_dict.keys():
                 videos_dict[video_name].append(image_name)
                 videos_dict_num[video_name]+=1
             else:
                 videos_dict[video_name] = [image_name]
                 videos_dict_num[video_name] = 1
-        for i in videos_dict_num.keys():
-            if videos_dict_num[i]<4:
+                
+        for i in videos_dict_num.keys():            # if video length have frame less than clip_size. Delete it
+            if videos_dict_num[i]<self.clip_size:
                 del videos_dict[i]
+                """
+            if video_name not in videos_dict.keys():
+                videos_dict[video_name] = []
+                videos_dict_num[video_name] = 0
+                for j in range(1,6):
+                    videos_dict[video_name].append(video_name+"-000"+str(j)+".jpg")
+                    videos_dict_num[video_name] += 1
         return videos_dict
 
     def load_data(self):
@@ -57,7 +69,7 @@ class MERL5Action(object):
         # print(datas)
         for i in datas:
 
-            url = i["image"]['url']
+            url = os.path.join("/mnt/hdd10tb/Datasets/MERL3000",i["image"]['url'].split("/")[-1])
             height = i["image"]['height']
             width = i["image"]['width']
             image_name = i["image"]['file_name']

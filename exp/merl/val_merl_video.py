@@ -48,12 +48,13 @@ model = action.build_merge_model(model_pe, num_actions, input_shape,
 
 
 # weights_path = "weights_merlaction_141.h5"
-weights_path = "weights_merlaction_3_006.h5"
+weights_path = "weights_merlaction_1_041.h5"
 model.load_weights(weights_path)
 
 
 anno_path = "/home/pminhtamnb/data.json"
-videos_dict_path =  "/home/son/lightweight-human-pose-estimation/settings/3/test_merl.json"
+# videos_dict_path =  "/home/son/lightweight-human-pose-estimation/settings/4/test_merl.json"
+videos_dict_path =  "/mnt/hdd10tb/Users/pminhtamnb/deephar/settings/setting_5/test.txt"
 
 merl_seq = MERL5Action(videos_dict_path,anno_path,pennaction_dataconf,
         poselayout=pa16j2d, clip_size=num_frames)

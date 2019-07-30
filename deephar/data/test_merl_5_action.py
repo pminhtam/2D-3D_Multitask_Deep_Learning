@@ -78,5 +78,13 @@ def load_videos_dict():
             videos_dict[video_name] = 1
     return videos_dict
 
-videos_dict = load_videos_dict()
-print(set(videos_dict.values()))
+# videos_dict = load_videos_dict()
+# print(set(videos_dict.values()))
+videos_dict_path =  "/mnt/hdd10tb/Users/pminhtamnb/deephar/settings/setting_1/train.txt"
+
+f = open(videos_dict_path, 'r')
+datas = []
+for i in f:
+    datas.append(i.strip("\n"))
+f.close()
+print(datas)
