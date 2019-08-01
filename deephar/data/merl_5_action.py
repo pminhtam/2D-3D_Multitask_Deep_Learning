@@ -17,63 +17,36 @@ class MERL5Action(object):
 
         self.dataconf = dataconf
         self.poselayout = poselayout
-        # self.videos_dict,self.bbox_dict,self.urls_dict = self.load_data()
+
         self.videos_dict,self.videos_dict_num,self.action_dict,self.bbox_dict = self.load_data()
-        # print(self.videos_dict_num)
-        # print(min(self.videos_dict_num.values()))
         # print(set(self.videos_dict_num.values()))
-        self.name_videos = list(self.videos_dict.keys())
-        # print(self.name_videos)
-        random.shuffle(self.name_videos)
-        # self.classes = ["ReachToShelf","RetractFromShelf"]
-        self.classes = {"ApproachtoShelf":0,"GlanceatShelf":1,"LookatShelf":2}
+        self.id_videos = list(self.videos_dict.keys())
+        random.shuffle(self.id_videos)
+        self.classes = {"ApproachtoShelf":0,"GlanceAtShelf":1,"LookatShelf":2}
 
 
     def load_data(self):
         f = open(self.anno_path, 'rb')
-        # datas = pickle.load(f)
         datas = json.load(f)
         f.close()
-        videos_dict = {}
-        videos_dict_num = {}
-        action_dict = {}
-        bbox_dict = {}
-        urls_dict = {}
-        # print(datas)
+        videos_dict = {}        # id : [image path of frame in video]
+        videos_dict_num = {}    # id : num_frames_of_video
+        action_dict = {}        # id : action
+        bbox_dict = {}          # url_image : bbox
+
         for i in datas:
-
             url = i["image"]['url']
-            # height = i["image"]['height']
-            # width = i["image"]['width']
-            # image_name = i["image"]['file_name']
             action = i['action']
-            # urls_dict[image_name] = url
             bbox = i['person_bbox']
-            bbox2 = []
-            video_name = url.split("/")[-2]
-
-            try:
-                for b in bbox:
-                    bbox_ = [0, 0, 0, 0]
-                    bbox_[0] = b[0]
-                    bbox_[1] = b[1]
-                    bbox_[2] = b[2]
-                    bbox_[3] = b[3]
-                    bbox2.append(bbox_)
-            except:
-                print(bbox)
-                print(video_name)
-            # bbox2.append(bbox)
-            bbox_dict[url] = bbox2
-
-
-            if video_name in videos_dict.keys():
-                videos_dict[video_name].append(url)
-                videos_dict_num[video_name] += 1
+            id = i['id']
+            bbox_dict[url] = bbox
+            if id in videos_dict.keys():
+                videos_dict[id].append(url)
+                videos_dict_num[id] += 1
             else:
-                videos_dict[video_name] = [url]
-                videos_dict_num[video_name] = 1
-                action_dict[video_name] = action
+                videos_dict[id] = [url]
+                videos_dict_num[id] = 1
+                action_dict[id] = action
         return videos_dict,videos_dict_num,action_dict,bbox_dict
 
     def load_image(self, url):
@@ -84,7 +57,6 @@ class MERL5Action(object):
             if len(bbox) == 0:
                 img = cv2.resize(imgt, (256, 256))
             else:
-                bbox = bbox[0]
                 try:  # crop image with bbox
                     img = imgt[int(bbox[1]):int(round(bbox[3])), \
                           int(bbox[0]):int(round(bbox[2]))]  # crop image
@@ -99,41 +71,44 @@ class MERL5Action(object):
             raise
 
         # return imgt
-    def load_video(self,video_name,num_frame):
+    def load_video(self,id_video,num_frame):
         video = []
-        if self.videos_dict_num[video_name]<num_frame:
-            a = [i for i in range(0,self.videos_dict_num[video_name])]
+        if self.videos_dict_num[id_video]<num_frame:
+            a = [i for i in range(0,self.videos_dict_num[id_video])]
             while len(a)<num_frame:
-                b = random.randrange(self.videos_dict_num[video_name])
+                b = random.randrange(self.videos_dict_num[id_video])
                 a.append(b)
             a.sort()
             for i in a:
-                url = self.videos_dict[video_name][i]
+                url = self.videos_dict[id_video][i]
                 image = self.load_image(url)
                 video.append(image)
         else:
-            a = [i for i in range(0, self.videos_dict_num[video_name])]
+            a = [i for i in range(0, self.videos_dict_num[id_video])]
             while len(a) > num_frame:
                 a.pop(random.randrange(len(a)))
             a.sort()
             # print(a)
             for i in a:
-                url = self.videos_dict[video_name][i]
+                url = self.videos_dict[id_video][i]
                 image = self.load_image(url)
                 video.append(image)
         return video
 
     def get_data(self, key,mode=0):
         output = {}
-        video_name = self.name_videos[key]
+        id_video = self.id_videos[key]
         if key>=self.get_length()-1:
-            random.shuffle(self.name_videos)
+            random.shuffle(self.id_videos)
         # num_frame = self.video1s_dict[video_name]
 
-        frame = self.load_video(video_name,self.clip_size)
+        frame = self.load_video(id_video,self.clip_size)
         cls = [0,0,0]
-        action = self.action_dict[video_name]
-        cls[self.classes[action]] = 1
+        action = self.action_dict[id_video]
+        if action == "GlanceAtShelf" or action == "GlanceatShelf":
+            cls[1] = 1
+        else:
+            cls[self.classes[action]] = 1
 
         output['frame'] = frame
         output['merlaction'] = cls
@@ -153,15 +128,16 @@ class MERL5Action(object):
         return len(self.videos_dict)
 
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 if __name__ == "__main__":
     # anno_path = "/home/pminhtamnb/123.json"
-    anno_path = "/mnt/hdd10tb/Users/andang/actions/train_2.json"
+    # anno_path = "/mnt/hdd10tb/Users/andang/actions/train_2.json"
+    anno_path = "/mnt/hdd10tb/Users/andang/actions/test_2.json"
 
     merl = MERL5Action(anno_path,clip_size=8)
     # frame = merl.get_data(500)["frame"]
     # merlaction = merl.get_data(500)["merlaction"]
-    # print(len(frame))
+    # print(frame)
     # print(merlaction)
     print(merl.get_length())
     # for i in range(10):

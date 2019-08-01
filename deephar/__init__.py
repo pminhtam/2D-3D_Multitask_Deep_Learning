@@ -31,5 +31,3 @@ info += ' version "{}"\n'.format(keras.__version__)
 from . import data
 from . import models
 from . import utils
-
-sys.stderr.write(info)
