@@ -5,7 +5,7 @@ from deephar.utils import *
 import pickle
 
 class MERLAction(object):
-    """Implementation of the MPII dataset for single person.
+    """Implementation of the MERL dataset for action recignition.
     """
 
     def __init__(self, dataset_path, anno_path,dataconf=None,poselayout=pa16j2d,clip_size=3):

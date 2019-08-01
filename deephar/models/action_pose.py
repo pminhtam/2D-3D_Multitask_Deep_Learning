@@ -13,13 +13,17 @@ from deephar.objectives import elasticnet_loss_on_valid_joints
 
 
 def action_top(x, name=None):
+    # print("action_top  x  ",x)  # shape = (?,1,4,2)   (num_frames/4, num_joints/4,num_actions)
+
     x = global_max_min_pooling(x)
     x = Activation('softmax', name=name)(x)
+    # print("action_top Activation x  ",x) # shape = (?,2)  (,num_actions)
+
     return x
 
 
 def build_act_pred_block(x, num_out, name=None, last=False, include_top=True):
-
+    # print("build_act_pred_block 26 x  " , x)    #  (num_frames/2, num_joints/2,num_features)
     num_features = K.int_shape(x)[-1]
 
     ident = x
@@ -32,6 +36,8 @@ def build_act_pred_block(x, num_out, name=None, last=False, include_top=True):
     x = max_min_pooling(x1, (2, 2))
     action_hm = act_conv(x, num_out, (3, 3))
     y = action_hm
+    # print("build_act_pred_block y 39 " , y)   # shape=(?, 1, 4, 2) (num_frames/4, num_joints/4,num_actions)
+
     if include_top:
         y = action_top(y)
 
@@ -39,6 +45,8 @@ def build_act_pred_block(x, num_out, name=None, last=False, include_top=True):
         action_hm = UpSampling2D((2, 2))(action_hm)
         action_hm = act_conv_bn(action_hm, num_features, (3, 3))
         x = add([ident, x1, action_hm])
+    # print("build_act_pred_block x 48 " , x)       # (num_frames/2, num_joints/2,num_features)
+    # print("build_act_pred_block y 49 " , y)       # (num_frames/4, num_joints/4,num_actions)
 
     return x, y
 
@@ -62,7 +70,9 @@ def build_pose_model(num_joints, num_actions, num_temp_frames=None, pose_dim=2,
         b = conv_bn(x, 32, (1, 1))
         b = conv_bn(b, 56, (3, 3))
         x = concatenate([a, b])
+        # print("build_pose_model   x 73 ", x)    #  (num_frames, num_joints,num_features=112)
         x = max_min_pooling(x, (2, 2))
+        # print("build_pose_model   x 75 ", x)    #  (num_frames/2, num_joints/2,num_features=112)
     elif network_version == 'v2':
         a = conv_bn_act(x, 12, (3, 1))
         b = conv_bn_act(x, 24, (3, 3))
@@ -145,7 +155,7 @@ def build_merge_model(
     if ar_pose_weights is not None:
         model_pose.load_weights(ar_pose_weights)
     out_pose = model_pose([y_in, p_in])
-
+    # print("action pose  out_pose  ",out_pose) # shape = 4* (*,1,4,2)  # 4* (?,num_frames/2, num_joints/2,num_actions)
     f = kronecker_prod(hs_in, xb1_in)
     num_features = K.int_shape(f)[-1]
     model_vis = build_visual_model(num_joints, num_actions, num_features,
@@ -154,6 +164,7 @@ def build_merge_model(
     if ar_visual_weights is not None:
         model_vis.load_weights(ar_visual_weights)
     out_vis = model_vis(f)
+    # print("action pose  out_pose  ",out_pose)  # shape = 4* (*,1,4,2)    #  4* (?,num_frames/2, num_joints/2,num_actions)
 
     for i in range(len(out_pose)):
         outputs.append(action_top(out_pose[i], name='p%d' % (i+1)))
@@ -170,10 +181,14 @@ def build_merge_model(
                 use_bias=False)
         x = conv(inp)
         w = conv.get_weights()
+        print(w)
         w[0].fill(1.)
         w[1].fill(0)
+
+        print(w)
         for i in range(num_filters):
             w[1][0, 0, i, i] = 1.
+        print(w)
         conv.set_weights(w)
 
         return x

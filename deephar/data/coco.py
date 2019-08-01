@@ -6,7 +6,7 @@ from deephar.utils import *
 import random
 
 class COCOSinglePerson(object):
-    """Implementation of the MPII dataset for single person.
+    """Implementation of the COCO dataset for pose estimation.
     """
 
     def __init__(self, dataset_path, anno_path,dataconf=None,poselayout=pa16j2d):

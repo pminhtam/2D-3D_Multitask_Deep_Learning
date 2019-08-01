@@ -56,3 +56,8 @@ This additional annotation can be downloaded
 [here](https://drive.google.com/open?id=1eTJPb8q2XCRK8NEC4h17p17JW2DDNwjG)
 (2GB from Google Drive).
 
+### COCO
+Install pycocotool 
+``` 
+pip install git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
+```
