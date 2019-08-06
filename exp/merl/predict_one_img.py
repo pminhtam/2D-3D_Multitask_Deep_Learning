@@ -23,11 +23,6 @@ import annothelper
 
 annothelper.check_mpii_dataset()
 
-logdir = './'
-if len(sys.argv) > 1:
-    logdir = sys.argv[1]
-    mkdir(logdir)
-    sys.stdout = open(str(logdir) + '/log.txt', 'w')
 
 """Architecture configuration."""
 num_blocks = 8
@@ -47,12 +42,9 @@ for b in range(int(len(model.outputs) / 2)):
         name='blk%d' % (b + 1)))
 model = Model(model.input, outputs, name=model.name)
 
-# """
-"""Load pre-trained model."""
-# """
+
 weights_path = "weights_merl_061.h5"
 model.load_weights(weights_path)
-# """
 anno_path = "/home/pminhtamnb/proj4/7-kpts/merl4000_4300.pkl"
 dataset_path = "/mnt/hdd10tb/Users/duong/MERL"
 mpii = MERLSinglePerson(dataset_path,anno_path,dataconf=mpii_sp_dataconf)

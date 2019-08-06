@@ -18,7 +18,8 @@ from deephar.models import reception
 from deephar.models import action_2D as action
 from deephar.utils import *
 from deephar.callbacks import SaveModel
-import keras
+from keras.callbacks import ModelCheckpoint,EarlyStopping,TensorBoard
+
 
 sys.path.append(os.path.join(os.getcwd(), 'exp/common'))
 
@@ -48,7 +49,7 @@ printcn(HEADER,"Load model reception done")
 
 model = action.build_merge_model(model_pe, num_actions, input_shape,
         num_frames, num_joints, num_blocks, pose_dim=2, pose_net_version='v1',
-        full_trainable=False)
+        full_trainable=True)
 
 printcn(OKBLUE,"Load model done")
 # weights_path = "weights_merlaction_1_003.h5"
@@ -71,23 +72,28 @@ printcn(OKGREEN,"Load data train done")
 val_anno_path = "/mnt/hdd10tb/Users/andang/actions/test_2.json"
 val_merl_seq = MERL5Action(val_anno_path,pennaction_dataconf,
         poselayout=pa16j2d, clip_size=num_frames)
-val_merl_te = BatchLoader(merl_seq, ['frame'], ['merlaction'], TRAIN_MODE,
+val_merl_te = BatchLoader(val_merl_seq, ['frame'], ['merlaction'], TRAIN_MODE,
         batch_size=batch_size, shuffle=False,num_predictions=11)
 
 printcn(WARNING,"Data test " + str(val_merl_seq.get_length()))
 printcn(OKGREEN,"Load data test done")
 
 callbacks = []
-weights_file = 'weights_merlaction_new_{epoch:03d}.h5'
+weights_file = "/mnt/hdd10tb/Users/pminhtamnb/deephar/weights_merlaction_new_{epoch:03d}-{val_m_acc:.4f}.h5"
 
-callbacks.append(SaveModel(weights_file,save_after_num_epoch=10))
-callbacks.append(keras.callbacks.TensorBoard(log_dir='./log/', histogram_freq=0,write_graph=False, write_images=False))
+# callbacks.append(SaveModel(weights_file,save_after_num_epoch=10))
+callbacks.append(ModelCheckpoint(weights_file, monitor='val_m_acc', verbose=1, save_best_only=True, mode='max',period=5))
+callbacks.append(EarlyStopping(monitor='val_m_acc', min_delta=0, patience=10, verbose=1, mode='auto'))
+callbacks.append(TensorBoard(log_dir='./log/', histogram_freq=0,write_graph=False, write_images=False,update_freq = 500))
 
 from keras.optimizers import SGD
 lr = 0.001
 momentum = 0.95
 loss_weights=None
-epochs = 500
+epochs = 1
+
+
+
 model.compile(loss='categorical_crossentropy',
                 optimizer=SGD(lr=lr, momentum=momentum, nesterov=True),
                 metrics=['acc'], loss_weights=loss_weights)
@@ -101,6 +107,6 @@ model.fit_generator(merl_te,
         validation_data=val_merl_te,
         shuffle=True,
         initial_epoch=0)
-# """
-
-model.save_weights(weights_file.format(epoch =epochs))
+# for layer in model.layers:
+#         layer.trainable = True
+model.save_weights('weights_merlaction_new_done.h5')
