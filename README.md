@@ -29,8 +29,26 @@ With keypoint is list of point , each point is array with form \[
 x,y,confident_score \]
 ## 2. Merl for action recognition
 Combine pose and visual feature for action recognition. Data load from
-json file with bbox of each frame.
+json file with bbox of each frame. 
 
+Data from json file.
+
+Each element have form
+
+```
+{
+"action": "LookatShelf", 
+"keypoints": [], 
+"id": "LookatShelf_33_1_crop_3243_3374_InspectProduct", 
+"image": 
+    {
+    "url": "/mnt/hdd10tb/Users/andang/actions/video/LookatShelf/33_1_crop_3243_3374_InspectProduct/2.jpg", 
+    "file_name": "2.jpg", 
+    "width": 920, "height": 680
+    }, 
+"person_bbox": [418, 336, 559, 499]
+}
+```
 # Run code
 Train coco pose estimation
 ```
@@ -41,14 +59,15 @@ Train coco pose estimation
 Train merl pose estimation
 
 ```
- CUDA_VISIBLE_DEVICES=1 python exp/coco/train_merl_singleperson.py
+ CUDA_VISIBLE_DEVICES=1 python exp/merl/train_merl_singleperson.py
 --batch-size 16 --epochs 10
 ```
 
 Train merl action recognition
 ```
- CUDA_VISIBLE_DEVICES=1 python exp/coco/train_merl_video.py
---batch-size 16 --epochs 10
+CUDA_VISIBLE_DEVICES=2 python exp/merl/train_merl_video.py 
+--num-frames 4 --anno-path /mnt/hdd10tb/Users/andang/actions/train_2.json 
+--val-anno-path /mnt/hdd10tb/Users/andang/actions/test_2.json
 ```
 
 # Model 
@@ -78,6 +97,13 @@ Pose estimation model
   - xb1: visual feature output from Stem model shape = (1, num_frames,
     32, 32, 576)
 - output predict action
+
+# Validation
+
+```
+CUDA_VISIBLE_DEVICES=1 python exp/merl/val_merl_video.py
+```
+
 ## Citing
 
 Please cite our paper if this software (or any part of it) or weights are

@@ -10,4 +10,4 @@ CUDA_VISIBLE_DEVICES=1 python exp/coco/train_coco_singleperson.py
 
 CUDA_VISIBLE_DEVICES=2 python exp/merl/train_merl_singleperson.py --batch-size 16 --epochs 10
 
-CUDA_VISIBLE_DEVICES=2 python exp/merl/train_merl_video.py
+CUDA_VISIBLE_DEVICES=2 python exp/merl/train_merl_video.py --num-frames 4 --anno-path /mnt/hdd10tb/Users/andang/actions/train_2.json --val-anno-path /mnt/hdd10tb/Users/andang/actions/test_2.json

@@ -22,7 +22,8 @@ import numpy as np
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--weights-file",type=str,default=None,help="weights path")
+parser.add_argument("--weights-file",type=str,default=None,help="weights path",required=True)
+parser.add_argument("--label-path",type=str,default="/mnt/hdd10tb/Users/andang/actions/test_2.json",help="file json val label")
 args = parser.parse_args()
 
 
@@ -46,107 +47,39 @@ model = action.build_merge_model(model_pe, num_actions, input_shape,
         num_frames, num_joints, num_blocks, pose_dim=2, pose_net_version='v1',
         full_trainable=False)
 
-# weights_path = args.weights_file
-weights_path = "/mnt/hdd10tb/Users/pminhtamnb/deephar/weights_merlaction_new_050-0.9399.h5"
+weights_path = args.weights_file
+# weights_path = "/mnt/hdd10tb/Users/pminhtamnb/deephar/weights_merlaction_new_050-0.9399.h5"
 # weights_path = "weights_merlaction_new_done.h5"
 # weights_path = "weights_merlaction_1_041.h5"
 
 model.load_weights(weights_path)
+printcn(OKBLUE,"Load model done")
 
 # val_anno_path = "/mnt/hdd10tb/Users/andang/actions/test_2.json"
-val_anno_path = "/mnt/hdd10tb/Users/andang/actions/train_2.json"
+# val_anno_path = "/mnt/hdd10tb/Users/andang/actions/train_2.json"
+val_anno_path = args.label_path
 val_merl_seq = MERL5Action(val_anno_path,pennaction_dataconf,
         poselayout=pa16j2d, clip_size=num_frames)
+printcn(OKGREEN,"Load data test done")
 
-total = 0
-total_0 = 0
-true_0 = 0
-true_0_last = 0
-true_1 = 0
-true_1_last = 0
-total_1 = 0
-true_2 = 0
-true_2_last = 0
-total_2 = 0
-true = 0
-true_last = 0
+classes = {"ApproachtoShelf":0,"GlanceAtShelf":1,"LookatShelf":2}
+result_m = np.zeros((len(classes),len(classes)),dtype=int)
+result_mmm = np.zeros((len(classes),len(classes)),dtype=int)
+result_mmmvvv = np.zeros((len(classes),len(classes)),dtype=int)
+
 from tqdm import tqdm
 for i in tqdm(range(val_merl_seq.get_length())):
-# for i in ddd:
     data = val_merl_seq.get_data(i)
     pred = model.predict(np.expand_dims(data['frame'], axis=0))
-    # print(pred)
-    # print(data['merlaction'])
-    # """
-    if np.argmax(data['merlaction']) == 0:
-        total_0 += 1
-        if np.argmax(pred[-3])==np.argmax(data['merlaction']):
-            true_0+=1
-            true+=1
-        if np.argmax(pred[-1])==np.argmax(data['merlaction']):
-            true_0_last+=1
-            true_last+=1
-    elif np.argmax(data['merlaction']) == 1:
-        total_1 += 1
-        if np.argmax(pred[-3])==np.argmax(data['merlaction']):
-            true_1+=1
-            true+=1
-        if np.argmax(pred[-3])==np.argmax(data['merlaction']):
-            true_1_last+=1
-            true_last+=1
-    elif np.argmax(data['merlaction']) == 2:
-        total_2 += 1
-        if np.argmax(pred[-3])==np.argmax(data['merlaction']):
-            true_2+=1
-            true+=1
-        if np.argmax(pred[-3])==np.argmax(data['merlaction']):
-            true_2_last+=1
-            true_last+=1
-    total +=1
-    
 
-print("total    ",total)
-print("total_0    ",total_0)
-print("true_0    ",true_0)
-print("true_0_last    ",true_0_last)
-print("total_1     ",total_1)
-print("true_1     ",true_1)
-print("true_1_last     ",true_1_last)
-print("total_2     ",total_2)
-print("true_2     ",true_2)
-print("true_2_last     ",true_2_last)
-print("true       ",true)
-print("true_last       ",true_last)
-# """
-#111  -1
-# total     3331
-# true_0     44
-# true_1      1598
-# true        1642
+    label = np.argmax(data['merlaction'])
+    pred_m = np.argmax(pred[-3])
+    pred_mmm = np.argmax(pred[-2])
+    pred_mmmvvv = np.argmax(pred[-1])
+    result_m[label][pred_m] +=1
+    result_mmm[label][pred_mmm] +=1
+    result_mmmvvv[label][pred_mmmvvv] +=1
 
-#121  -1
-# total     3331
-# total_0     1710
-# true_0     387
-# total_1      1621
-# true_1      1536
-# true        1923
-
-#121    -3
-# total     3331
-# total_0     1710
-# true_0     587
-# total_1      1621
-# true_1      1451
-# true        2038
-
-#141
-# total     3331
-# total_0     1710
-# true_0     1679
-# true_0_last     1664
-# total_1      1621
-# true_1      1592
-# true_1_last      1592
-# true        3271
-# true_last        3256
+print(result_m)
+print(result_mmm)
+print(result_mmmvvv)
